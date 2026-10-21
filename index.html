@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Discovery Hub & Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chargement global et robuste du SDK Google Gemini -->
+    
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>🧠 IA Discovery Hub</h1>
+            
+            <!-- Sélecteur de mode de jeu et savoir -->
+            <div class="mode-selector">
+                <button id="btn-mode-lexique" class="active">📖 Dictionnaire</button>
+                <button id="btn-mode-layers">🥞 Les Couches</button>
+                <button id="btn-mode-knowledge">📚 Base de Connaissances</button>
+            </div>
+
+            <p id="game-instructions">Reliez chaque concept d'intelligence artificielle à sa définition correcte !</p>
+            <div id="score-board">Score : <span id="score">0</span> / <span id="total-pairs">0</span></div>
+        </header>
+
+        <!-- Les plateaux de jeu (Modes 1 et 2) -->
+        <main class="game-board" id="main-board">
+            <div class="column" id="left-column">
+                <h2 id="left-title">Concepts</h2>
+                <div class="list" id="left-list"></div>
+            </div>
+
+            <div class="column" id="right-column">
+                <h2 id="right-title">Définitions</h2>
+                <div class="list" id="right-list"></div>
+            </div>
+        </main>
+
+        <!-- Base de connaissances (Mode 3) - Caché par défaut -->
+        <main class="knowledge-board hidden" id="knowledge-board">
+            <div class="knowledge-sidebar">
+                <h2>Concepts disponibles</h2>
+                <div class="list" id="knowledge-list"></div>
+            </div>
+            <div class="knowledge-content" id="knowledge-detail">
+                <div class="placeholder-text">💡 Sélectionnez un concept à gauche pour afficher sa fiche détaillée.</div>
+            </div>
+        </main>
+
+        <footer>
+            <button id="reset-btn">🔄 Recommencer</button>
+            <div id="victory-message" class="hidden">🎉 Félicitations ! Objectif atteint avec succès !</div>
+        </footer>
+    </div>
+
+    <!-- 💬 Fenêtre de Chat Flottante -->
+    <div class="chat-widget">
+        <button class="chat-button" id="chat-toggle-btn">💬 Discuter avec l'IA</button>
+        
+        <div class="chat-window hidden" id="chat-window">
+            <div class="chat-header">
+                <h3>🤖 Assistant Gemini</h3>
+                <button id="chat-close-btn">✖</button>
+            </div>
+            
+            <!-- Zone de configuration de la clé API -->
+            <div class="api-key-container" id="api-key-area">
+                <input type="password" id="gemini-key-input" placeholder="Collez votre clé API Gemini ici">
+                <button id="save-key-btn">OK</button>
+            </div>
+
+            <div class="chat-status" id="chat-status">Statut : Mode hors-ligne (en attente de votre clé API)</div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message system">
+                    Pour activer la puissance de Gemini 2.5, collez votre clé API gratuite d'AI Studio ci-dessus !<br>
+                    <em>Vos requêtes seront envoyées directement à Google sans passer par un serveur intermédiaire.</em>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Posez votre question ici...">
+                <button id="chat-send-btn">Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chargement standard de l'application -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
