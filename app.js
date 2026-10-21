@@ -437,64 +437,31 @@ async function handleUserMessage() {
 
     appendMessage(text, "user");
     chatInput.value = "";
-
     chatStatus.textContent = "Gemini réfléchit...";
 
-    const apiKey = localStorage.getItem("gemini_api_key");
+    try {
+        // Appel transparent vers notre fonction cloud Vercel
+        const response = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: text })
+        });
 
-    if (apiKey) {
-        // --- METHODE ABSOLUE ET SANS CORS : SUBMIT VIA SIMPLE FORM EN TYPE TEXT/PLAIN ---
-        try {
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-            
-            // Pour contourner le CORS du navigateur, nous envoyons notre requête de manière asynchrone
-            // en 'text/plain'. Comme ce n'est pas qualifié de "requête complexe", le navigateur accepte 
-            // de l'envoyer à Google en direct sans émettre de requête 'Preflight OPTIONS' !
-            const response = await fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "text/plain" // L'arme anti-CORS !
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: text }]
-                    }],
-                    generationConfig: {
-                        systemInstruction: {
-                            parts: [{
-                                text: "Tu es un tuteur d'IA drôle et pédagogue. Tu as pour but de répondre aux questions de l'utilisateur de manière ultra-simple sur les concepts clés du jeu (comme le RAG, les LLM, etc.). Réponds en français."
-                            }]
-                        }
-                    }
-                })
-            });
+        const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error("Clé API invalide ou refus de communication des serveurs Google.");
-            }
-            
-            const data = await response.json();
-            
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                const responseText = data.candidates[0].content.parts[0].text;
-                appendMessage(responseText, "bot");
-            } else {
-                throw new Error("Réponse vide.");
-            }
-            
-        } catch (error) {
-            console.error("Erreur de connexion:", error);
-            appendMessage(`Erreur : ${error.message}<br><br>💡 Assurez-vous d'avoir saisi une clé API valide et d'être connecté à internet.`, "bot");
-        } finally {
-            chatStatus.textContent = "Statut : Connecté à Gemini (En ligne ⚡)";
+        if (!response.ok) {
+            throw new Error(data.error || "Erreur de communication avec le serveur.");
         }
-    } else {
-        // Mode dictionnaire local hors-ligne si aucune clé n'est enregistrée
-        setTimeout(() => {
-            const response = generateSmartResponse(text);
-            appendMessage(response, "bot");
-            chatStatus.textContent = "Statut : Mode hors-ligne (Dictionnaire local)";
-        }, 500);
+
+        appendMessage(data.reply, "bot");
+
+    } catch (error) {
+        console.error("Erreur chat:", error);
+        appendMessage(`Erreur : ${error.message}`, "bot");
+    } finally {
+        chatStatus.textContent = "Statut : Connecté à Gemini (En ligne ⚡)";
     }
 }
 
